@@ -1,4 +1,3 @@
-"""Layar SHOP: beli kartu, jasa hapus, lanjut stage (layout Figma baru)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,7 +16,6 @@ DARK = (30, 30, 36)
 PINK = (255, 79, 163)
 PINK_LIGHT = (255, 140, 198)
 
-# Layout browse diukur dari assets/Shop/Shop.png (1920x1080).
 TITLE_POS = (89, 55)
 SUB_POS = (86, 185)
 KOIN_RIGHT = 1837
@@ -38,8 +36,6 @@ COUNT_Y = 490
 SELECT_RECT = pygame.Rect(1345, 561, 251, 86)
 NEXT_RECT = pygame.Rect(1487, 918, 361, 102)
 
-# Mode hapus (Deck Customization): grid kartu 6x2 di atas panel gelap.
-# Diukur dari assets/DeckCust/Deck_Customizatioon.png (1920x1080).
 DC_PANEL = pygame.Rect(79, 199, 1762, 684)
 DC_PANEL_COLOR = (38, 38, 38)
 DC_TITLE_POS = (89, 55)
@@ -60,15 +56,13 @@ PAGE_SIZE = 12
 
 
 def _darken(img: pygame.Surface) -> pygame.Surface:
-    """Salinan gelap untuk state disabled (alpha dipertahankan)."""
+    # Salinan gelap untuk state disabled (alpha dipertahankan).
     out = img.copy()
     out.fill((90, 90, 90, 0), special_flags=pygame.BLEND_RGB_SUB)
     return out
 
 
 class ShopState:
-    """Toko antar stage (mouse only)."""
-
     def __init__(
         self, screen: pygame.Surface, fonts: FontSet, state: GameState, audio=None
     ) -> None:
@@ -137,7 +131,7 @@ class ShopState:
         self.right_disabled = _darken(self.right_img)
 
     def enter(self) -> None:
-        """Buka shop: generate 2 slot beli, reset mode hapus."""
+        # Buka shop: generate 2 slot beli, reset mode hapus.
         self.state.open_shop()
         self.mode = "browse"
         self.page = 0
@@ -147,7 +141,7 @@ class ShopState:
         )
 
     def run(self, clock: pygame.time.Clock) -> str:
-        """Loop shop. Kembalikan 'encounter' atau 'quit'."""
+        # Loop shop. Kembalikan 'encounter' atau 'quit'.
         self.enter()
         while True:
             for event in pygame.event.get():
@@ -163,19 +157,17 @@ class ShopState:
             pygame.display.flip()
             clock.tick(APP.fps)
 
-    # ---------- klik ----------
-
     def _click(self) -> None:
-        """Bunyi klik tombol (diam jika tanpa audio)."""
+        # Bunyi klik tombol (diam jika tanpa audio).
         self._sfx("click")
 
     def _sfx(self, name: str) -> None:
-        """Bunyi SFX apa pun (diam jika tanpa audio)."""
+        # Bunyi SFX apa pun (diam jika tanpa audio).
         if self.audio is not None:
             self.audio.play_sfx(name)
 
     def handle_click(self, pos: tuple[int, int]) -> str | None:
-        """Tangani klik kiri. Kembalikan 'encounter' jika lanjut stage."""
+        # Tangani klik kiri. Kembalikan 'encounter' jika lanjut stage.
         if MUTE_RECT.collidepoint(pos):
             if self.audio is not None:
                 self.audio.toggle_mute()
@@ -250,7 +242,7 @@ class ShopState:
         return None
 
     def _refresh(self) -> None:
-        """Perbarui status aktif tombol sesuai kondisi kini."""
+        # Perbarui status aktif tombol sesuai kondisi kini.
         for i in range(len(self.buy_rects)):
             sold = self.state.shop_slots[i] is None if i < len(self.state.shop_slots) else True
             self.buy_enabled[i] = (
@@ -266,7 +258,7 @@ class ShopState:
         self.page = min(max(self.page, 0), max_page)
 
     def _row_slots(self) -> list[tuple[pygame.Rect, int]]:
-        """Slot kartu deck grid 6x2 di halaman aktif: (rect, indeks deck)."""
+        # Slot kartu deck grid 6x2 di halaman aktif: (rect, indeks deck).
         cards = self.state.master_deck.cards
         start = self.page * PAGE_SIZE
         slots: list[tuple[pygame.Rect, int]] = []
@@ -281,10 +273,10 @@ class ShopState:
             slots.append((rect, deck_index))
         return slots
 
-    # ---------- gambar ----------
+    # Gambar
 
     def _draw_header(self) -> None:
-        """Judul + KOIN (judul beda per mode; pesan hanya di browse)."""
+        # Judul + KOIN (judul beda per mode; pesan hanya di browse).
         if self.mode == "browse":
             self.screen.blit(self.title_font.render("SHOP", True, WHITE), TITLE_POS)
             if self.message:
@@ -315,7 +307,7 @@ class ShopState:
         text: str = "",
         font: pygame.font.Font | None = None,
     ) -> None:
-        """Blit tombol image + teks dinamis opsional (mis. BUY)."""
+        # Blit tombol image + teks dinamis opsional (mis. BUY).
         if not enabled:
             img = disabled
         elif rect.collidepoint(mouse_pos):
@@ -330,7 +322,7 @@ class ShopState:
             )
 
     def draw(self, mouse_pos: tuple[int, int], mouse_pressed: bool = False) -> None:
-        """Gambar seluruh layar shop."""
+        # Gambar seluruh layar shop.
         del mouse_pressed
         self.screen.fill(SHOP_BG)
         self._draw_header()
@@ -346,7 +338,7 @@ class ShopState:
         draw_mute_button(self.screen, muted, mouse_pos)
 
     def _draw_browse(self, mouse_pos: tuple[int, int]) -> None:
-        """Dua slot beli + panel Deck Customization."""
+        # Dua slot beli + panel Deck Customization.
         from cards import Card as CardObj
 
         for i, x in enumerate(SLOT_X):
@@ -397,7 +389,7 @@ class ShopState:
         )
 
     def _draw_remove(self, mouse_pos: tuple[int, int]) -> None:
-        """Mode hapus: grid kartu 6x2 + Delete/Back + pagination."""
+        # Mode hapus: Grid kartu + Delete/Back + Pagination.
         pygame.draw.rect(self.screen, DC_PANEL_COLOR, DC_PANEL, border_radius=28)
         sub = self.message if self.message else "SELECT CARD TO REMOVE"
         self.screen.blit(self.dc_sub_font.render(sub, True, WHITE), DC_SUB_POS)

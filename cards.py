@@ -1,15 +1,10 @@
-"""Definisi kartu sebagai objek data (tanpa aturan tempur).
-
-Aturan tempur (damage, energi, draw) ada di game_state.py.
-"""
 from __future__ import annotations
 
 from config import BALANCE
 
 
 class Card:
-    """Satu kartu fisik di deck / tangan. Stat diambil dari config."""
-
+    # Satu kartu fisik di deck / tangan. Stat diambil dari config.
     __slots__ = ("name", "cost", "damage", "energy_gain", "draw_extra", "is_greed", "text")
 
     def __init__(self, name: str) -> None:
@@ -27,11 +22,11 @@ class Card:
 
     @property
     def description(self) -> str:
-        """Teks efek untuk ditampilkan di kartu."""
+        # Teks efek untuk ditampilkan di kartu.
         return self.text
 
     def clone(self) -> Card:
-        """Salinan kartu baru dengan nama sama."""
+        # Salinan kartu baru dengan nama sama.
         return Card(self.name)
 
     def __eq__(self, other: object) -> bool:
@@ -47,12 +42,12 @@ class Card:
 
 
 def create_card(name: str) -> Card:
-    """Factory satu kartu berdasarkan nama."""
+    # Factory satu kartu berdasarkan nama.
     return Card(name)
 
 
 def create_starter_deck() -> list[Card]:
-    """Starter deck: Punch x6 + Rest x4 (isi dari config)."""
+    # Starter deck: Punch x6 + Rest x4 (isi dari config).
     cards: list[Card] = []
     for name, count in BALANCE.starter_deck.items():
         cards.extend(Card(name) for _ in range(count))
@@ -60,5 +55,5 @@ def create_starter_deck() -> list[Card]:
 
 
 def shop_pool_names() -> list[str]:
-    """Nama-nama kartu yang bisa muncul di Shop."""
+    # Nama-nama kartu yang bisa muncul di Shop.
     return list(BALANCE.shop_pool)

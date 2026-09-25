@@ -1,7 +1,3 @@
-"""Manajemen audio: BGM per fase + SFX (jadwal tunda + ducking).
-
-Gagal aman: file hilang / device audio tak ada -> game tetap jalan bisu.
-"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -33,8 +29,6 @@ SFX_FILES = {
 
 
 class AudioManager:
-    """Pemutar BGM. Panggil play_bgm() tiap ganti fase (no-op jika sama)."""
-
     def __init__(
         self,
         base_dir: str | Path | None = None,
@@ -62,7 +56,7 @@ class AudioManager:
             self.enabled = False
 
     def play_bgm(self, name: str, fade_ms: int = 600) -> None:
-        """Putar BGM loop. Ganti hanya jika beda dari yang sedang main."""
+        # Putar BGM loop. Ganti hanya jika beda dari yang sedang main.
         if not self.enabled or name == self.current or name not in BGM_FILES:
             return
         path = self.base / BGM_FILES[name]
@@ -78,7 +72,7 @@ class AudioManager:
             return
 
     def _music_level(self) -> float:
-        """Volume musik saat ini (0 jika mute, turun jika duck aktif)."""
+        # Volume musik saat ini (0 jika mute, turun jika duck aktif).
         if self.muted:
             return 0.0
         if self._duck_until > pygame.time.get_ticks():
@@ -86,7 +80,7 @@ class AudioManager:
         return self.bgm_volume
 
     def toggle_mute(self) -> bool:
-        """Bisu / bunyi lagi. Kembalikan status muted."""
+        # Bisu / bunyi lagi. Kembalikan status muted.
         if not self.enabled:
             return self.muted
         self.muted = not self.muted
@@ -99,7 +93,7 @@ class AudioManager:
         return self.muted
 
     def stop_bgm(self, fade_ms: int = 400) -> None:
-        """Hentikan BGM (fade out)."""
+        # Hentikan BGM (fade out).
         if not self.enabled:
             return
         try:
@@ -109,7 +103,7 @@ class AudioManager:
         self.current = None
 
     def play_sfx(self, name: str) -> None:
-        """Putar SFX sekali (lazy-load + cache)."""
+        # Putar SFX sekali (lazy-load + cache).
         if not self.enabled or self.muted or name not in SFX_FILES:
             return
         sound = self._sfx.get(name)
@@ -129,13 +123,13 @@ class AudioManager:
             pass
 
     def schedule_sfx(self, name: str, delay_ms: int = 0) -> None:
-        """Jadwalkan SFX main N ms lagi (diproses di update())."""
+        # Jadwalkan SFX main N ms lagi (diproses di update()).
         if not self.enabled or name not in SFX_FILES:
             return
         self._pending.append((pygame.time.get_ticks() + delay_ms, name))
 
     def duck(self, duration_ms: int, level: float = DUCK_VOLUME) -> None:
-        """Turunkan BGM sementara agar fanfare/SFX panjang terdengar jelas."""
+        # Turunkan BGM sementara agar fanfare/SFX panjang terdengar jelas.
         if not self.enabled:
             return
         try:
@@ -145,7 +139,7 @@ class AudioManager:
         self._duck_until = pygame.time.get_ticks() + duration_ms
 
     def update(self) -> None:
-        """Panggil tiap frame: mainkan SFX jatuh tempo + pulihkan volume."""
+        # Panggil tiap frame: mainkan SFX jatuh tempo + pulihkan volume.
         if not self.enabled:
             return
         now = pygame.time.get_ticks()

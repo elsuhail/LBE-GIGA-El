@@ -1,4 +1,3 @@
-"""Status dan aturan main. Murni logika tanpa pygame (bisa dites headless)."""
 from __future__ import annotations
 
 import random
@@ -11,8 +10,7 @@ from deck import CombatPile, MasterDeck
 
 
 class Phase(Enum):
-    """State machine layar (dipakai main.py mulai Fase 2)."""
-
+    # State machine layar (dipakai main.py mulai Fase 2).
     MENU = auto()
     ENCOUNTER = auto()
     SHOP = auto()
@@ -21,8 +19,7 @@ class Phase(Enum):
 
 @dataclass
 class PlayResult:
-    """Hasil sekali main kartu."""
-
+    # Hasil sekali main kartu.
     played: bool
     reason: str = ""
     damage: int = 0
@@ -34,8 +31,7 @@ class PlayResult:
 
 
 class GameState:
-    """Satu run: stage, koin, Target, energi, tumpukan kartu, dan Shop."""
-
+    # Satu run: stage, koin, Target, energi, tumpukan kartu, dan Shop.
     def __init__(self, rng: random.Random | None = None) -> None:
         self.rng: random.Random = rng if rng is not None else random.Random()
         self.master_deck: MasterDeck = MasterDeck.starter()
@@ -55,10 +51,10 @@ class GameState:
         self.stage_cleared: bool = False
         self.run_over: bool = False
 
-    # ---------- run & stage ----------
+    # Run & stage
 
     def start_run(self) -> None:
-        """Mulai run baru dari Stage 1."""
+        # Mulai run baru dari Stage 1.
         self.master_deck = MasterDeck.starter()
         self.stage = 1
         self.best_stage = 1
@@ -70,7 +66,7 @@ class GameState:
         self.start_stage()
 
     def start_stage(self) -> None:
-        """Siapkan Target + tumpukan baru, lalu buka Turn 1."""
+        # Siapkan Target + tumpukan baru, lalu buka Turn 1.
         self.target_max_hp = BALANCE.target_max_hp(self.stage)
         self.target_hp = self.target_max_hp
         self.target_name = BALANCE.target_name(self.stage)
@@ -84,20 +80,20 @@ class GameState:
 
     @property
     def hand(self) -> list:
-        """Kartu di tangan (list kosong jika pile belum ada)."""
+        # Kartu di tangan (list kosong jika pile belum ada).
         if self.pile is None:
             return []
         return self.pile.hand
 
     @property
     def score(self) -> int:
-        """Skor run: stage tertinggi yang dicapai."""
+        # Skor run: stage tertinggi yang dicapai.
         return self.best_stage
 
-    # ---------- main kartu ----------
+    # Main kartu
 
     def can_play(self, hand_index: int) -> tuple[bool, str]:
-        """Cek apakah kartu di tangan bisa dimainkan."""
+        # Cek apakah kartu di tangan bisa dimainkan.
         if self.stage_cleared or self.run_over:
             return False, "stage sudah selesai"
         if self.pile is None:
@@ -110,7 +106,7 @@ class GameState:
         return True, ""
 
     def play_card(self, hand_index: int) -> PlayResult:
-        """Mainkan kartu: bayar energi, terapkan efek, buang ke discard."""
+        # Mainkan kartu: bayar energi, terapkan efek, buang ke discard.
         ok, reason = self.can_play(hand_index)
         if not ok or self.pile is None:
             return PlayResult(played=False, reason=reason)
@@ -162,10 +158,6 @@ class GameState:
         )
 
     def end_turn(self) -> str:
-        """Buang sisa tangan; lanjut turn berikutnya atau game over.
-
-        Kembalikan: "cleared" | "next_turn" | "game_over".
-        """
         if self.stage_cleared:
             return "cleared"
         if self.run_over or self.pile is None:
@@ -181,17 +173,17 @@ class GameState:
         self.pile.draw_cards(BALANCE.draw_per_turn)
         return "next_turn"
 
-    # ---------- shop ----------
+    # Shop
 
     def open_shop(self) -> list[str | None]:
-        """Generate 2 slot beli (kartu acak berbeda). Hanya setelah menang."""
+        # Generate 2 slot beli (kartu acak berbeda). Hanya setelah menang.
         if not self.stage_cleared:
             raise RuntimeError("Shop hanya dibuka setelah Target hancur")
         self.shop_slots = self.rng.sample(shop_pool_names(), k=2)
         return list(self.shop_slots)
 
     def buy_shop_card(self, slot: int) -> tuple[bool, str]:
-        """Beli kartu di slot; slot terisi jadi kosong."""
+        # Beli kartu di slot; slot terisi jadi kosong.
         if not self.stage_cleared:
             return False, "belum menang"
         if not 0 <= slot < len(self.shop_slots):
@@ -207,7 +199,7 @@ class GameState:
         return True, f"membeli {name}"
 
     def remove_deck_card(self, deck_index: int) -> tuple[bool, str]:
-        """Buang permanen 1 kartu dari deck; harga naik tiap dipakai."""
+        # Buang permanen 1 kartu dari deck; harga naik tiap dipakai.
         if not self.stage_cleared:
             return False, "belum menang"
         if not self.master_deck.can_use_remove_service():
@@ -222,7 +214,7 @@ class GameState:
         return True, f"membuang {removed.name}"
 
     def next_stage(self) -> None:
-        """Lanjut ke stage berikutnya (hanya setelah menang)."""
+        # Lanjut ke stage berikutnya (hanya setelah menang).
         if not self.stage_cleared:
             raise RuntimeError("Next stage hanya setelah Target hancur")
         self.stage += 1

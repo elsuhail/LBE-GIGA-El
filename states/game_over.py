@@ -1,4 +1,3 @@
-"""Layar GAME_OVER: panel skor + Try Again / Back to Menu (ikut Figma)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,7 +7,6 @@ import pygame
 from game_state import GameState
 from ui import MUTE_RECT, FontSet, draw_centered_text, draw_mute_button, draw_right_text
 
-# Layout diukur dari assets/Ending/Game Over.png (1920x1080).
 GO_BG = (0, 0, 0)
 GO_PINK = (237, 0, 142)
 GO_DIVIDER = (248, 160, 213)
@@ -37,8 +35,6 @@ LINK_RECT = pygame.Rect(826, 801, 266, 69)
 
 
 class GameOverState:
-    """Game over saat Turn ke-3 habis dan Target masih hidup."""
-
     def __init__(
         self, screen: pygame.Surface, fonts: FontSet, state: GameState, audio=None
     ) -> None:
@@ -73,7 +69,7 @@ class GameOverState:
         self.link_hover = _load("Back to Menu Hover.png", LINK_RECT.size)
 
     def run(self, clock: pygame.time.Clock) -> str:
-        """Loop game over. Kembalikan 'restart', 'menu', atau 'quit'."""
+        # Loop game over. Kembalikan 'restart', 'menu', atau 'quit'.
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -89,7 +85,7 @@ class GameOverState:
             clock.tick(60)
 
     def handle_click(self, pos: tuple[int, int]) -> str | None:
-        """Tangani klik kiri. Kembalikan 'restart'/'menu' atau None."""
+        # Tangani klik kiri. Kembalikan 'restart'/'menu' atau None.
         if MUTE_RECT.collidepoint(pos):
             if self.audio is not None:
                 self.audio.toggle_mute()
@@ -103,12 +99,12 @@ class GameOverState:
         return None
 
     def _click(self) -> None:
-        """Bunyi klik tombol (diam jika tanpa audio)."""
+        # Bunyi klik tombol (diam jika tanpa audio).
         if self.audio is not None:
             self.audio.play_sfx("click")
 
     def _draw_glow(self) -> None:
-        """Rona magenta samar di belakang panel (lihat referensi)."""
+        # Rona magenta samar di belakang panel (lihat referensi).
         glow = pygame.Surface((1000, 700), pygame.SRCALPHA)
         for radius, alpha in ((480, 8), (340, 10), (200, 12)):
             pygame.draw.circle(
@@ -117,7 +113,7 @@ class GameOverState:
         self.screen.blit(glow, (460, 0))
 
     def draw(self, mouse_pos: tuple[int, int], mouse_pressed: bool = False) -> None:
-        """Gambar panel skor + tombol."""
+        # Gambar panel skor + tombol.
         del mouse_pressed
         state = self.state
         self.screen.fill(GO_BG)

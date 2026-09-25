@@ -1,4 +1,3 @@
-"""Entry point game 'Pukulin Aja': state machine antar layar (mouse only)."""
 from __future__ import annotations
 
 import pygame
@@ -14,11 +13,8 @@ from ui import FontSet
 
 
 def main() -> None:
-    """Buka window dan jalankan MENU -> ENCOUNTER -> SHOP -> ... -> GAME_OVER."""
     pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
-    # SCALED: layout tetap 1920x1080, di-scale otomatis ikut ukuran window.
-    # RESIZABLE: window bisa di-resize/dimaximize; aspek dijaga (letterbox).
     screen = pygame.display.set_mode((APP.width, APP.height), pygame.SCALED | pygame.RESIZABLE)
     pygame.display.set_caption(APP.title)
     clock = pygame.time.Clock()

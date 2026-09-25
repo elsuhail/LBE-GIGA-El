@@ -1,8 +1,3 @@
-"""Sumber tunggal semua angka balance + pengaturan aplikasi.
-
-Ubah angka di sini untuk tuning tanpa menyentuh logika.
-Semua kalkulasi game memakai integer.
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -10,7 +5,6 @@ from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
 class CardSpec:
-    """Spesifikasi satu jenis kartu."""
     cost: int
     damage: int = 0
     energy_gain: int = 0
@@ -21,7 +15,6 @@ class CardSpec:
 
 @dataclass(frozen=True)
 class GameBalance:
-    """Semua angka balance permainan."""
     target_hp_base: int = 30  # HP Target Stage 1
     target_hp_per_stage: int = 15  # tambahan HP tiap stage
     turn_limit: int = 3  # turn per stage
@@ -75,18 +68,16 @@ class GameBalance:
     )
 
     def target_max_hp(self, stage: int) -> int:
-        """HP Target untuk stage tertentu (stage mulai dari 1)."""
+        # HP Target untuk stage tertentu (stage mulai dari 1).
         return self.target_hp_base + (stage - 1) * self.target_hp_per_stage
 
     def target_name(self, stage: int) -> str:
-        """Nama kosmetik Target, berputar tiap stage."""
+        # Nama kosmetik Target, berputar tiap stage.
         return self.target_names[(stage - 1) % len(self.target_names)]
 
 
 @dataclass(frozen=True)
 class AppSettings:
-    """Pengaturan window (bukan balance)."""
-
     width: int = 1920
     height: int = 1080
     fps: int = 60

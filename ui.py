@@ -1,8 +1,3 @@
-"""Helper rendering pygame: font, teks, kartu image, ikon mute.
-
-Seluruh tombol & kartu berupa gambar dari assets/UI; teks dinamis dirender
-dengan AmaticSC-Bold.
-"""
 from __future__ import annotations
 
 import pygame
@@ -13,7 +8,7 @@ from config import PINK, WHITE
 
 @dataclass
 class FontSet:
-    """Kumpulan font Amatic SC berbagai ukuran."""
+    # Kumpulan font Amatic SC berbagai ukuran.
 
     small: pygame.font.Font
     medium: pygame.font.Font
@@ -22,7 +17,7 @@ class FontSet:
 
     @classmethod
     def default(cls) -> FontSet:
-        """Buat FontSet dari AmaticSC-Bold (dipakai semua layar)."""
+        # Buat FontSet dari AmaticSC-Bold (dipakai semua layar).
         from pathlib import Path
 
         font_path = str(Path(__file__).parent / "fonts" / "AmaticSC-Bold.ttf")
@@ -42,7 +37,7 @@ def draw_centered_text(
     y: int,
     color: tuple[int, int, int] = WHITE,
 ) -> None:
-    """Gambar teks rata tengah horizontal."""
+    # Gambar teks rata tengah horizontal.
     img = font.render(text, True, color)
     surface.blit(img, img.get_rect(midtop=(cx, y)))
 
@@ -55,7 +50,7 @@ def draw_right_text(
     y: int,
     color: tuple[int, int, int] = WHITE,
 ) -> None:
-    """Gambar teks rata kanan."""
+    # Gambar teks rata kanan.
     img = font.render(text, True, color)
     surface.blit(img, img.get_rect(topright=(right_x, y)))
 
@@ -74,7 +69,7 @@ _card_cache: dict[tuple[str, int, int, bool], pygame.Surface] = {}
 
 
 def get_card_image(name: str, w: int, h: int, playable: bool = True) -> pygame.Surface:
-    """Ambil gambar kartu (cache; scale sekali; versi gelap jika tak playable)."""
+    # Ambil gambar kartu (cache; scale sekali; versi gelap jika tak playable).
     key = (name, w, h, playable)
     hit = _card_cache.get(key)
     if hit is not None:
@@ -100,13 +95,13 @@ def draw_card(
     playable: bool,
     hovered: bool,
 ) -> None:
-    """Blit gambar kartu baru (teks baked; hover = lift oleh caller)."""
+    # Blit gambar kartu baru (teks baked; hover = lift oleh caller).
     del fonts, hovered
     surface.blit(get_card_image(card.name, rect.w, rect.h, playable), rect)
 
 
 class FloatingText:
-    """Teks melayang naik lalu hilang (mis. '-5' damage di Target)."""
+    # Teks melayang naik lalu hilang (mis. '-5' damage di Target).
 
     def __init__(
         self,
@@ -128,12 +123,12 @@ class FloatingText:
         self.age = 0.0
 
     def update(self, dt: float) -> bool:
-        """Majukan umur; kembalikan False jika sudah habis."""
+        # Majukan umur; kembalikan False jika sudah habis.
         self.age += dt
         return self.age < self.ttl
 
     def draw(self, surface: pygame.Surface) -> None:
-        """Gambar dengan posisi naik + alpha memudar."""
+        # Gambar dengan posisi naik + alpha memudar.
         progress = min(self.age / self.ttl, 1.0)
         img = self.font.render(self.text, True, self.color)
         img.set_alpha(int(255 * (1.0 - progress)))
@@ -148,7 +143,7 @@ MUTE_GREY = (138, 138, 160)
 def draw_mute_button(
     surface: pygame.Surface, muted: bool, mouse_pos: tuple[int, int]
 ) -> None:
-    """Ikon speaker: gelombang pink = bunyi, silang = bisu."""
+    # Ikon speaker: gelombang pink = bunyi, silang = bisu.
     rect = MUTE_RECT
     hovered = rect.collidepoint(mouse_pos)
     x, y = rect.x, rect.y

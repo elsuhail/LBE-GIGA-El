@@ -1,4 +1,3 @@
-"""Layar MENU: judul + tombol Start/Quit image (hover support)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,22 +7,18 @@ import pygame
 from config import APP, WHITE
 from ui import MUTE_RECT, FontSet, draw_centered_text, draw_mute_button
 
-# BG disamakan dengan MainMenu.png referensi (solid, diukur dari asset).
 MENU_BG = (21, 21, 21)
-# Posisi diukur dari MainMenu.png 1920x1080 (tengah x=960, asset 460x102).
+
 START_POS = (730, 445)
 QUIT_POS = (730, 624)
 BUTTON_SIZE = (460, 102)
 TITLE_Y = 110
 BUTTON_FONT_SIZE = 64
 BUTTON_TEXT_COLOR = (0, 0, 0)
-# Teks digeser sedikit ke atas karena 10px bawah asset adalah shadow pink.
 TEXT_Y_OFFSET = -5
 
 
 class MenuState:
-    """Menu utama (mouse only, image buttons)."""
-
     def __init__(
         self, screen: pygame.Surface, fonts: FontSet, audio=None
     ) -> None:
@@ -48,12 +43,12 @@ class MenuState:
         self.quit_rect = pygame.Rect(QUIT_POS, BUTTON_SIZE)
 
     def _click(self) -> None:
-        """Bunyi klik tombol (diam jika tanpa audio)."""
+        # Bunyi klik tombol (diam jika tanpa audio).
         if self.audio is not None:
             self.audio.play_sfx("click")
 
     def run(self, clock: pygame.time.Clock) -> str:
-        """Loop menu. Kembalikan 'start' atau 'quit'."""
+        # Loop menu. Kembalikan 'start' atau 'quit'.
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -76,7 +71,7 @@ class MenuState:
             clock.tick(APP.fps)
 
     def draw(self, mouse_pos: tuple[int, int]) -> None:
-        """Gambar seluruh layar menu (dipakai run + bisa dites headless)."""
+        # Gambar seluruh layar menu (dipakai run + bisa dites headless).
         self.screen.fill(MENU_BG)
         draw_centered_text(
             self.screen, self.fonts.title, "PUKULIN AJA", APP.width // 2, TITLE_Y, WHITE

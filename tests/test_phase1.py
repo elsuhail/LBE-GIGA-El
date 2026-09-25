@@ -1,4 +1,4 @@
-"""Tes logika headless (tanpa UI/pygame). Jalankan: python -m tests.test_phase1."""
+# Tes logika headless (tanpa UI/pygame). Jalankan: python -m tests.test_phase1.
 from __future__ import annotations
 
 import random
@@ -18,7 +18,7 @@ FAIL = 0
 
 
 def check(name: str, cond: bool) -> None:
-    """Catat hasil satu asersi."""
+    # Catat hasil satu asersi.
     global PASS, FAIL
     if cond:
         PASS += 1
@@ -29,7 +29,7 @@ def check(name: str, cond: bool) -> None:
 
 
 def fresh_state(seed: int = 0) -> GameState:
-    """GameState baru yang sudah start_run (deterministik)."""
+    # GameState baru yang sudah start_run (deterministik).
     state = GameState(rng=random.Random(seed))
     state.start_run()
     return state
@@ -216,7 +216,7 @@ def test_shop() -> None:
 
 
 def main() -> int:
-    """Jalankan semua tes, kembalikan exit code."""
+    # Jalankan semua tes, kembalikan exit code.
     tests = [
         test_starter_deck,
         test_hp_scaling,

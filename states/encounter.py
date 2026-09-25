@@ -1,4 +1,3 @@
-"""Layar ENCOUNTER: pertarungan kartu melawan Target statis (layout Figma baru)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,7 +17,6 @@ from ui import (
     draw_right_text,
 )
 
-# Kartu image baru 213x292; pitch 283 + center 748 diukur dari referensi.
 CARD_W = 213
 CARD_H = 292
 CARD_PITCH = 283
@@ -26,9 +24,8 @@ ROW_CX = 748
 MAX_ROW_W = 1360
 CARDS_Y = 726
 HOVER_LIFT = 10
-FLOAT_Y = 285  # di bawah teks HP (HP 217-246 di referensi)
+FLOAT_Y = 285 
 
-# Layout diukur dari assets/Encounter/Encounter.png (1920x1080).
 ENCOUNTER_BG = (21, 21, 21)
 HP_EMPTY = (30, 30, 36)
 HP_BAR_RECT = pygame.Rect(711, 133, 492, 67)
@@ -45,8 +42,6 @@ END_RECT = pygame.Rect(1487, 918, 361, 102)
 
 
 class EncounterState:
-    """Satu encounter. Menang -> 'shop', kalah -> 'game_over'."""
-
     def __init__(
         self, screen: pygame.Surface, fonts: FontSet, state: GameState, audio=None
     ) -> None:
@@ -77,7 +72,7 @@ class EncounterState:
             self.hp_img = pygame.transform.smoothscale(self.hp_img, HP_BAR_RECT.size)
 
     def run(self, clock: pygame.time.Clock) -> str:
-        """Loop encounter. Kembalikan 'shop', 'game_over', atau 'quit'."""
+        # Loop encounter. Kembalikan 'shop', 'game_over', atau 'quit'.
         self.message = self._stage_intro()
         self.floaters = []
         while True:
@@ -95,10 +90,8 @@ class EncounterState:
                 self.audio.update()
             pygame.display.flip()
 
-    # ---------- klik ----------
-
     def handle_click(self, pos: tuple[int, int]) -> str | None:
-        """Tangani klik kiri. Kembalikan 'shop'/'game_over' atau None."""
+        # Tangani klik kiri. Kembalikan 'shop'/'game_over' atau None.
         if MUTE_RECT.collidepoint(pos):
             if self.audio is not None:
                 self.audio.toggle_mute()
@@ -143,33 +136,33 @@ class EncounterState:
         return None
 
     def _click(self) -> None:
-        """Bunyi klik tombol (diam jika tanpa audio)."""
+        # Bunyi klik tombol (diam jika tanpa audio).
         self._sfx("click")
 
     def _sfx(self, name: str) -> None:
-        """Bunyi SFX apa pun (diam jika tanpa audio)."""
+        # Bunyi SFX apa pun (diam jika tanpa audio).
         if self.audio is not None:
             self.audio.play_sfx(name)
 
     def _spawn_damage(self, damage: int) -> None:
-        """Angka '-N' melayang di bawah HP bar."""
+        # Angka '-N' melayang di bawah HP bar.
         self._spawn_count += 1
         x = APP.width // 2 + ((self._spawn_count * 71) % 180) - 90
         self.floaters.append(FloatingText(x, FLOAT_Y, f"-{damage}", self.hud_font))
 
     def _stage_intro(self) -> str:
-        """Pesan pembuka tiap stage."""
+        # Pesan pembuka tiap stage.
         return f"Stage {self.state.stage}: kalahkan {self.state.target_name}!"
 
-    # ---------- gambar ----------
+    # Gambar
 
     def _is_playable(self, index: int) -> bool:
-        """Kartu bisa dimainkan jika energi cukup dan stage belum selesai."""
+        # Kartu bisa dimainkan jika energi cukup dan stage belum selesai.
         card = self.state.hand[index]
         return card.cost <= self.state.energy and not self.state.stage_cleared
 
     def _card_rects(self, mouse_pos: tuple[int, int] | None = None) -> list[pygame.Rect]:
-        """Rect kartu tangan; pitch menciut jika tangan penuh; hover naik."""
+        # Rect kartu tangan; pitch menciut jika tangan penuh; hover naik.
         n = len(self.state.hand)
         if n == 0:
             return []
@@ -190,7 +183,7 @@ class EncounterState:
         return rects
 
     def _draw_hp_bar(self) -> None:
-        """HP bar image: HealthBar.png di-clip sesuai HP, sisa gelap."""
+        # HP bar image: HealthBar.png di-clip sesuai HP, sisa gelap.
         state = self.state
         ratio = (state.target_hp / state.target_max_hp) if state.target_max_hp > 0 else 0
         fill_w = int(HP_BAR_RECT.w * max(0.0, min(1.0, ratio)))
@@ -208,7 +201,7 @@ class EncounterState:
             pygame.draw.rect(self.screen, HP_EMPTY, empty)
 
     def draw(self, mouse_pos: tuple[int, int], mouse_pressed: bool = False) -> None:
-        """Gambar seluruh layar encounter sesuai referensi Figma."""
+        # Gambar seluruh layar encounter sesuai referensi Figma.
         state = self.state
         self.screen.fill(ENCOUNTER_BG)
 
